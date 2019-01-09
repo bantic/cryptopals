@@ -4,7 +4,7 @@ fn main() {
   println!("Hello, world!");
 }
 
-pub fn hex_to_decimal(hex: &str) -> i32 {
+fn hex_to_decimal(hex: &str) -> i32 {
   i32::from_str_radix(hex, 16).expect("Failed to parse")
 }
 
@@ -14,7 +14,7 @@ fn decimal_to_bits(d: i32) -> Vec<bool> {
   bits.chars().map(|c| c == '1').collect()
 }
 
-pub fn hex_to_bits(hex: &str) -> Vec<bool> {
+fn hex_to_bits(hex: &str) -> Vec<bool> {
   let mut result = vec![];
   for idx in (0..hex.len()).step_by(2) {
     let decimal = hex_to_decimal(&hex[idx..idx + 2]);
@@ -26,7 +26,7 @@ pub fn hex_to_bits(hex: &str) -> Vec<bool> {
   result
 }
 
-pub fn pad_bits(bits: Vec<bool>) -> Vec<bool> {
+fn pad_bits(bits: Vec<bool>) -> Vec<bool> {
   let mut result = vec![];
   result.extend_from_slice(&bits);
   while result.len() % 6 != 0 {
