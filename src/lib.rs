@@ -2,7 +2,18 @@ mod crypto;
 
 #[cfg(test)]
 mod tests {
-  use crate::crypto::hex_to_base64;
+  use crate::crypto::{hex_to_base64, xor_hex};
+
+  #[test]
+  fn test_xor_hex() {
+    assert_eq!(
+      xor_hex(
+        "1c0111001f010100061a024b53535009181c",
+        "686974207468652062756c6c277320657965"
+      ),
+      "746865206b696420646f6e277420706c6179"
+    );
+  }
 
   #[test]
   fn test_hex_to_base64_simple() {
