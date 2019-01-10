@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub fn convert(hex: &str) -> String {
+pub fn hex_to_base64(hex: &str) -> String {
   let bits = pad_bits(hex_to_bits(hex));
   let equal_padding_needed = match bits.len() {
     l if l <= 24 => 24 - l,
