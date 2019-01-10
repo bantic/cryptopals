@@ -1,7 +1,21 @@
 use std::collections::HashMap;
 
-fn main() {
-  println!("Hello, world!");
+pub fn convert(hex: &str) -> String {
+  let bits = pad_bits(hex_to_bits(hex));
+  let equal_padding_needed = match bits.len() {
+    l if l <= 24 => 24 - l,
+    l => 24 - (24 % l),
+  } / 6;
+
+  let mut result = String::from("");
+  for i in (0..bits.len()).step_by(6) {
+    let _bits = bits[i..i + 6].to_vec();
+    result.push(bits_to_base64(_bits));
+  }
+  for _ in 0..equal_padding_needed {
+    result.push('=');
+  }
+  result
 }
 
 fn hex_to_decimal(hex: &str) -> i32 {
@@ -10,7 +24,6 @@ fn hex_to_decimal(hex: &str) -> i32 {
 
 fn decimal_to_bits(d: i32) -> Vec<bool> {
   let bits = format!("{:08b}", d);
-  println!("d2b {}->{:?}", d, bits);
   bits.chars().map(|c| c == '1').collect()
 }
 
@@ -19,7 +32,6 @@ fn hex_to_bits(hex: &str) -> Vec<bool> {
   for idx in (0..hex.len()).step_by(2) {
     let decimal = hex_to_decimal(&hex[idx..idx + 2]);
     let bits = decimal_to_bits(decimal);
-    println!("{}->{}->{:?}", &hex[idx..idx + 2], decimal, bits);
     result.extend_from_slice(&bits)
   }
 
@@ -118,33 +130,9 @@ fn bits_to_decimal(bits: Vec<bool>) -> i32 {
   let mut val: i32 = 0;
   for i in 0..bits.len() {
     let pow = max_exp - (i as u32);
-    // println!("i {}, val {}, pow: {}", i, bits[i], pow);
     val += if bits[i] { base.pow(pow) } else { 0 }
   }
   val
-}
-
-pub fn hex_to_base64(hex: &str) -> String {
-  let bits = pad_bits(hex_to_bits(hex));
-  let equal_padding_needed = match bits.len() {
-    l if l <= 24 => 24 - l,
-    l => 24 - (24 % l),
-  } / 6;
-  println!(
-    "padded bits len {}, padding_needed {}",
-    bits.len(),
-    equal_padding_needed
-  );
-
-  let mut result = String::from("");
-  for i in (0..bits.len()).step_by(6) {
-    let _bits = bits[i..i + 6].to_vec();
-    result.push(bits_to_base64(_bits));
-  }
-  for _ in 0..equal_padding_needed {
-    result.push('=');
-  }
-  result
 }
 
 #[cfg(test)]
@@ -246,20 +234,5 @@ mod tests {
       bits_to_decimal(vec![true, true, true, true, true, true]),
       63
     );
-  }
-
-  #[test]
-  fn test_hex264_simple() {
-    assert_eq!(hex_to_base64("4D616E"), "TWFu");
-    assert_eq!(hex_to_base64("4D61"), "TWE=");
-    assert_eq!(hex_to_base64("4D"), "TQ==");
-  }
-
-  #[test]
-  fn test_hex_to_base64() {
-    let input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
-    let expected = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t";
-
-    assert_eq!(hex_to_base64(input), expected);
   }
 }
