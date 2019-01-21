@@ -2,7 +2,20 @@ mod crypto;
 
 #[cfg(test)]
 mod tests {
-  use crate::crypto::{hex_to_base64, xor_hex};
+  use crate::crypto::convert::hex_to_vecu8;
+  use crate::crypto::{hex_to_base64, xor, xor_hex};
+
+  #[test]
+  fn test_hex_to_vecu8() {
+    assert_eq!(hex_to_vecu8("1b"), [27]);
+    assert_eq!(
+      hex_to_vecu8("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"),
+      vec![
+        27, 55, 55, 51, 49, 54, 63, 120, 21, 27, 127, 43, 120, 52, 49, 51, 61, 120, 57, 120, 40,
+        55, 45, 54, 60, 120, 55, 62, 120, 58, 57, 59, 55, 54
+      ]
+    );
+  }
 
   #[test]
   fn test_xor_hex() {

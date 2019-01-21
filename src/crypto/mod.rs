@@ -1,9 +1,35 @@
 mod hex_to_base64;
+mod xor;
 mod xor_hex;
 pub use self::hex_to_base64::hex_to_base64;
+pub use self::xor::xor;
 pub use self::xor_hex::xor_hex;
 
-mod convert {
+pub mod convert {
+  pub fn hex_to_vecu8(hex: &str) -> Vec<u8> {
+    let mut result: Vec<u8> = vec![];
+    for i in (0..hex.len()).step_by(2) {
+      let chunk = &hex[i..(i + 2)];
+      result.push(hex_to_u8(chunk));
+    }
+    result
+  }
+
+  // hex must be length 2
+  fn hex_to_u8(hex: &str) -> u8 {
+    if hex.len() != 2 {
+      panic!("Wrong length for hex_to_u8");
+    }
+    let mut result: u8 = 0;
+    for (i, c) in hex.chars().enumerate() {
+      let c = c.to_digit(16).expect("Failed to parse") as u8;
+      let pow: u32 = 1 - (i as u32);
+      let base: u8 = 16;
+      result = result + c * base.pow(pow);
+    }
+    result
+  }
+
   pub fn hex_to_decimal(hex: &str) -> i32 {
     i32::from_str_radix(hex, 16).expect("Failed to parse")
   }
